@@ -112,6 +112,78 @@ Function Get-TridionItem
 	}
 }
 
+Function Get-TridionItemTest
+{
+    <#
+    .Synopsis
+    Reads the item with the given ID.
+
+    .Notes
+    Example of properties available: Id, Title, etc.
+    
+    For a full list, consult the Content Manager Core Service API Reference Guide documentation 
+    (Tridion.ContentManager.Data.CommunicationManagement.IdentifiableObject object)
+
+    .Inputs
+    None.
+
+    .Outputs
+    Returns a list of objects of type [Tridion.ContentManager.CoreService.Client.IdentifiableObject].
+
+    .Link
+    Get the latest version of this script from the following URL:
+    https://github.com/pkjaer/tridion-powershell-modules
+
+    .Example
+    Get-TridionItem -Id "tcm:2-44"
+	Reads a Component.
+
+    .Example
+    Get-TridionItem -Id "tcm:2-55-8"
+	Reads a Schema.
+
+    .Example
+    Get-TridionItem -Id "tcm:2-44" | Select-Object Id, Title
+	Reads a Component and outputs just the ID and Title of it.
+	
+	.Example
+	Get-TridionPublication | Get-TridionItem
+	Reads every Publication within Tridion and returns the full data for each.
+    
+    #>
+    [CmdletBinding()]
+    Param
+    (
+		# The TCM URI or WebDAV URL of the item to retrieve.
+        [Parameter(Mandatory=$true,  ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true)]
+		[ValidateNotNullOrEmpty()]
+        [string]$Id
+    )
+	
+	Begin
+	{
+		$client = Get-TridionCoreServiceClient -Verbose:($PSBoundParameters['Verbose'] -eq $true);
+	}
+	
+    Process
+    {
+        if ($client -ne $null)
+        {
+			if (_IsExistingItem $client $Id)
+			{
+				return _GetItem $client $Id;
+			}
+		}
+		
+		return $null;
+    }
+	
+	End
+	{
+		Close-TridionCoreServiceClient $client;
+	}
+}
+
 function Get-TridionPublication
 {
     <#
