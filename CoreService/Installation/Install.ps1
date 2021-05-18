@@ -1,0 +1,37 @@
+#Requires -Version 3.0
+
+# Do not continue if there's an error
+$ErrorActionPreference = 'Stop';
+
+$branch = 'master';
+
+# Base URL to download the latest version from the internet
+$baseDownloadUrl = "https://raw.githubusercontent.com/pkjaer/tridion-powershell-modules/${branch}/CoreService";
+
+# List of all the files to install
+$directories = @("Clients", "Installation");
+$files = @(
+	'Clients/Tridion.ContentManager.CoreService.Client.2011sp1.dll', 
+	'Clients/Tridion.ContentManager.CoreService.Client.2013.dll', 
+	'Clients/Tridion.ContentManager.CoreService.Client.2013sp1.dll',
+	'Clients/Tridion.ContentManager.CoreService.Client.Web_8_1.dll',
+    'Clients/Tridion.ContentManager.CoreService.Client.Web_8_5.dll',
+    'Clients/Tridion.ContentManager.CoreService.Client.Sites_9_0.dll',
+	'Installation/Verify.ps1',
+	'AppData.psm1', 
+	'Client.psm1', 
+	'Items.psm1', 
+	'Publishing.psm1', 
+	'Settings.psm1', 
+	'Tridion-CoreService.psd1', 
+	'Trustees.psm1',
+	'Utilities.ps1',
+	'Workflow.psm1'
+);
+
+
+# Download the installation script
+Invoke-WebRequest "https://raw.githubusercontent.com/pkjaer/tridion-powershell-modules/${branch}/Shared/Installation/Install-ModuleFromWeb.ps1" | Invoke-Expression;
+
+# Install the above files and directories
+Install-ModuleFromWeb -ModuleName "Tridion-CoreService" -BaseUrl $baseDownloadUrl -Files $files -Directories $directories;
